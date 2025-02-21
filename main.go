@@ -1,5 +1,5 @@
 package main
 
 func main() {
-	runInteractiveMode()
+	solveAndPrint(2, 1, -3)
 }
