@@ -7,15 +7,16 @@ import (
 	"strconv"
 )
 
-var input = bufio.NewScanner(os.Stdin)
-
 func runInteractiveMode() {
+	input = bufio.NewScanner(os.Stdin)
+
 	for {
 		a := mustReadFloat("a = ")
 		b := mustReadFloat("b = ")
 		c := mustReadFloat("c = ")
 
-		solveAndPrint(a, b, c)
+		err := solveAndPrint(a, b, c)
+		fmt.Println("Error.", err)
 		fmt.Println()
 	}
 }
