@@ -16,7 +16,9 @@ func runInteractiveMode() {
 		c := mustReadFloat("c = ")
 
 		err := solveAndPrint(a, b, c)
-		fmt.Println("Error.", err)
+		if err != nil {
+			fmt.Println("Error.", err)
+		}
 		fmt.Println()
 	}
 }
