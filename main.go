@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func main() {
-	fmt.Println(solve(2, 1, -3))
+	solveAndPrint(2, 1, -3)
 }
