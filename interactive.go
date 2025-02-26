@@ -3,34 +3,53 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"os"
+	"io"
 	"strconv"
 )
 
-func runInteractiveMode() {
-	input = bufio.NewScanner(os.Stdin)
+type interactiveMode struct {
+	in  bufio.Scanner
+	out io.Writer
+}
 
+func newInteractiveMode(input io.Reader, output io.Writer) mode {
+	return &interactiveMode{*bufio.NewScanner(input), output}
+}
+
+func (m *interactiveMode) run() error {
 	for {
-		a := mustReadFloat("a = ")
-		b := mustReadFloat("b = ")
-		c := mustReadFloat("c = ")
+		a := m.mustReadFloat("a = ")
+		b := m.mustReadFloat("b = ")
+		c := m.mustReadFloat("c = ")
 
-		err := solveAndPrint(a, b, c)
+		_, err := m.out.Write(fmtEquation(a, b, c))
 		if err != nil {
-			fmt.Println("Error.", err)
+			return err
 		}
-		fmt.Println()
+
+		x1, x2, ok, err := solve(a, b, c)
+		var out []byte
+		if err != nil {
+			out = append([]byte("Error. "), []byte(err.Error())...)
+		} else {
+			out = fmtSolution(x1, x2, ok)
+		}
+
+		_, err = m.out.Write(append(out, '\n'))
+		if err != nil {
+			return err
+		}
 	}
 }
 
-func mustReadFloat(msg string) float64 {
+func (m *interactiveMode) mustReadFloat(msg string) float64 {
 	for {
-		fmt.Print(msg)
-		input.Scan()
-		strF := input.Text()
+		fmt.Fprint(m.out, msg)
+		m.in.Scan()
+		strF := m.in.Text()
 		f, err := strconv.ParseFloat(strF, 64)
 		if err != nil {
-			fmt.Printf("Error. Expected a valid real number, got %s instead\n", strF)
+			fmt.Fprintf(m.out, "Error. Expected a valid real number, got %s instead\n", strF)
 			continue
 		}
 		return f
